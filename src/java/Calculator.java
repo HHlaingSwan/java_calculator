@@ -1,9 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
-import java.util.Objects;
 
 public class Calculator {
     int borderWidth = 580;
@@ -24,7 +21,6 @@ public class Calculator {
     String[] rightSymbols = {"÷", "×", "-", "+", "="};
     String[] topSymbols = {"AC", "+/-", "%"};
 
-
     JFrame frame = new JFrame("Calculator");
 
     JLabel displayLabel = new JLabel();
@@ -37,7 +33,6 @@ public class Calculator {
 
 
     Calculator() {
-//        frame.setVisible(true);
         frame.setSize(borderWidth, borderHeight);
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
@@ -65,67 +60,66 @@ public class Calculator {
 
             buttonPanel.add(button);
 
+            button.addActionListener(e -> {
+                JButton button1 = (JButton) e.getSource();
+                String buttonValue = button1.getText();
 
-            button.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    JButton button = (JButton) e.getSource();
-                    String buttonValue = button.getText();
+                if (List.of(rightSymbols).contains(buttonValue)) {
+                    if (buttonValue.equals("=")) {
+                        if (A != null && operator != null) {
+                            B = displayLabel.getText();
+                            double numA = Double.parseDouble(A);
+                            double numB = Double.parseDouble(B);
 
-                    if (List.of(rightSymbols).contains(buttonValue)) {
-                        if (buttonValue == "=") {
-                            if (A != null) {
-                                B = displayLabel.getText();
-                                double numA = Double.parseDouble(A);
-                                double numB = Double.parseDouble(B);
-
-                                if (operator == "+") {
-                                    displayLabel.setText(removeZeroDecimal(numA + numB));
-                                } else if (operator == "-") {
-                                    displayLabel.setText(removeZeroDecimal(numA - numB));
-                                } else if (operator == "×") {
-                                    displayLabel.setText(removeZeroDecimal(numA * numB));
-                                } else if (operator == "÷") {
-                                    displayLabel.setText(removeZeroDecimal(numA / numB));
-                                }
-                                ClearAll();
+                            switch (operator) {
+                                case "+" -> displayLabel.setText(removeZeroDecimal(numA + numB));
+                                case "-" -> displayLabel.setText(removeZeroDecimal(numA - numB));
+                                case "×" -> displayLabel.setText(removeZeroDecimal(numA * numB));
+                                case "÷" -> displayLabel.setText(removeZeroDecimal(numA / numB));
                             }
-                        } else if ("+-+×".contains(buttonValue)) {
-                            if (operator == null) {
-                                A = displayLabel.getText();
-                                displayLabel.setText("0");
-                                B = "0";
-                            }
-                            operator = buttonValue;
-
+                            ClearAll();
                         }
+                    } else {
+                        if (operator == null) {
+                            A = displayLabel.getText();
+                            displayLabel.setText("0");
+                            B = "0";
+                        }
+                        operator = buttonValue;
+                    }
 
-                    } else if (List.of(topSymbols).contains(buttonValue)) {
-                        if (Objects.equals(buttonValue, "AC")) {
+                } else if (List.of(topSymbols).contains(buttonValue)) {
+                    switch (buttonValue) {
+                        case "AC" -> {
                             ClearAll();
                             displayLabel.setText("0");
-                        } else if (buttonValue == "+/-") {
+                        }
+                        case "+/-" -> {
                             double numDisplay = Double.parseDouble(displayLabel.getText());
                             numDisplay *= -1;
                             displayLabel.setText(removeZeroDecimal(numDisplay));
-                        } else if (buttonValue == "%") {
+                        }
+                        case "%" -> {
                             double numDisplay = Double.parseDouble(displayLabel.getText());
                             numDisplay /= 100;
                             displayLabel.setText(removeZeroDecimal(numDisplay));
-                        } else if (buttonValue == "") {
-
                         }
-                    } else {
-                        if (Objects.equals(buttonValue, ".")) {
-                            if (!displayLabel.getText().contains(buttonValue)) {
-                                displayLabel.setText(displayLabel.getText() + buttonValue);
-                            }
-                        } else if ("0123456789".contains(buttonValue)) {
-                            if (Objects.equals(displayLabel.getText(), "0")) {
-                                displayLabel.setText(buttonValue);
-                            } else {
-                                displayLabel.setText(displayLabel.getText() + buttonValue);
-                            }
+                    }
+                } else {
+                    if (buttonValue.equals(".")) {
+                        if (!displayLabel.getText().contains(buttonValue)) {
+                            displayLabel.setText(displayLabel.getText() + buttonValue);
+                        }
+                    } else if (buttonValue.equals("√")) {
+                        double numDisplay = Double.parseDouble(displayLabel.getText());
+                        if (numDisplay >= 0) {
+                            displayLabel.setText(removeZeroDecimal(Math.sqrt(numDisplay)));
+                        }
+                    } else if ("0123456789".contains(buttonValue)) {
+                        if (displayLabel.getText().equals("0")) {
+                            displayLabel.setText(buttonValue);
+                        } else {
+                            displayLabel.setText(displayLabel.getText() + buttonValue);
                         }
                     }
                 }
